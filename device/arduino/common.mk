@@ -1,22 +1,40 @@
+# ifeq (<string1>,<string2>)
+# 	...
+# endif
 ifeq ($(AVR_HOME),)
-	AVR_HOME := /Applications/Arduino.app/Contents/Java
+	# AVR_HOME := /Applications/Arduino.app/Contents/Java
+	AVR_HOME := /usr/local/avr8-gnu-toolchain-linux_x86_64
 endif
 
+# if CONFIG_AVR_TIMER equals to ""
 ifeq ($(CONFIG_AVR_TIMER),)
 CONFIG_AVR_TIMER := 1
 endif
 
+# for more text functions of GNU make, see: https://www.gnu.org/software/make/manual/html_node/Text-Functions.html
+# 如果 CONFIG_AVR_TIMER 的值不等于 0 1 2 其中一个，则报错
 ifeq (,$(filter $(CONFIG_AVR_TIMER), 0 1 2))
 $(error Only TIMER 0, 1, and 2 are supported for CONFIG_AVR_TIMER)
 endif
 
-CC := $(AVR_HOME)/hardware/tools/avr/bin/avr-gcc
-LD := $(AVR_HOME)/hardware/tools/avr/bin/avr-ld
-AR := $(AVR_HOME)/hardware/tools/avr/bin/avr-ar
+# the compiler
+CC := $(AVR_HOME)/bin/avr-gcc
+# the linker
+LD := $(AVR_HOME)/bin/avr-ld
+# the archiver combines a collection of object files into one archive file (the library)
+AR := $(AVR_HOME)/bin/avr-ar
+
+# -Wl,option1,option2,...,optionN	将 option1, option2, ..., optionN 传递给 linker
+# -D name=definition			可以认为在预处理过程中定义 #define name definition
+# -I dir				将 dir 增加到一个目录列表中，compiler 会在这个列表中列出的目录寻找头文件
+# -Wall					show all warnings
+#
+# VAR_NAME += string1 会以空格做分隔符将 string1 附加到`$(VAR_NAME)`的末尾
 CFLAGS += -Wl,--undefined=_mmcu,--section-start=.mmcu=0x910000 \
-	-DF_CPU=16000000 -I $(AVR_HOME)/hardware/tools/avr/lib/avr/include  -I/usr/local/include -O1 -Wall
+	-DF_CPU=16000000 -I $(AVR_HOME)/avr/include -O1 -Wall
 CFLAGS += -mmcu=$(TARGET_MMCU)
 
+# 如果 CONFIG_SIMAVR 为 1，则编译时增加相关 macro
 ifeq ($(CONFIG_SIMAVR),1)
 CFLAGS += -DSIMAVR
 endif
