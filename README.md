@@ -6,6 +6,10 @@ avr-os is a library that provides a very basic rutime that enables your program 
 
 The library uses pre-emptive multitasking to switch tasks and each task has its own stack that is restored when a task is resumed. An AVR timer is used to provide ticks and this interrupt is used to switch tasks.
 
+这个 library 使用抢占式调度实现多任务切换。每个任务都有自己独立的栈，当某任务执行时，系统也会切换到它对应的栈。
+
+使用 AVR timer 定时触发中断以实现任务调度和上下文切换。
+
 ## Adding library to Arduino
 
     git clone git://github.com/chrismoos/avr-os.git ~/Documents/Arduino/libraries/avros
@@ -15,6 +19,31 @@ The library uses pre-emptive multitasking to switch tasks and each task has its 
 You can create a static library for avr-os by issuing the following command:
 
     make DEVICE=arduino_uno
+
+other vars:
+
+|name|description|
+|:---|:----------|
+|`AVR_HOME`|the path of the compiler|
+|`CONFIG_AVR_TIMER`|0 或 1 或 2，默认为1|
+|`TARGET_MMCU`|device-specific|
+|`TARGET_OS_TASK_STACK_SIZE`|device/$(VENDOR)/$(DEVICE)/common.mk|
+|`TARGET_OS_TICK_INTERVAL_MS`|同上|
+|`TARGET_OS_MAX_TASKS`|同上|
+|`CONFIG_SIMAVR`|是否使用 simavr |
+|`TARGET_AVR_OS_OUT`|`build/avr-os.a`|
+|`TARGET_AVR_EXAMPLE_OUT`|`build/avr-os-example.img`|
+
+macros:
+|name|description|
+|:---|:----------|
+|`F_CPU`|avr-gcc|
+|`SIMAVR`||
+|`MAX_TASKS`||
+|`TASK_STACK_SIZE`||
+|`TICK_INTERVAL`||
+|`CONFIG_AVR_TIMER`||
+
 
 ## Supported devices
 
